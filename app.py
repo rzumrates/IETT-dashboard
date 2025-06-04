@@ -27,11 +27,17 @@ def load_data():
 def compute_priority(row, passenger_df, faults_df):
     hat = row['hat_kodu']
     bus = row['bus_id']
-    pred_prob = row['prediction_prob']
+    
+ 
     recent = passenger_df[passenger_df['SHATKODU'] == hat]
-    density_score = recent['YOLCU_SAYISI'].mean() / passenger_df['YOLCU_SAYISI'].max()
+    if recent.empty:
+        density_score = 0.0
+    else:
+        density_score = recent['YOLCU_SAYISI'].mean() / passenger_df['YOLCU_SAYISI'].max()
+
     fault_score = 1.0 if bus in faults_df['SKAPINUMARA'].values else 0.0
-    return 0.5 * pred_prob + 0.3 * density_score + 0.2 * fault_score
+
+    return 0.6 * density_score + 0.4 * fault_score
 
 def send_sms(bus_id):
     try:
