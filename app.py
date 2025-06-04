@@ -39,8 +39,8 @@ def send_sms(bus_id):
         client = Client(account_sid, auth_token)
         message = client.messages.create(
             body=f"[Otobüs {bus_id}] Bakım gerektiği tespit edildi. Lütfen teknik servise başvurun.",
-            from_='+1XXXXXXXXXX',
-            to='+90XXXXXXXXXX'
+            from_='+18382501727',
+            to='+905438289912'
         )
         return message.sid
     except Exception as e:
