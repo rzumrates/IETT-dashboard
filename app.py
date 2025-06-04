@@ -1,4 +1,5 @@
-
+from streamlit_folium import st_folium
+import folium
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -66,3 +67,23 @@ for _, row in sorted_df.iterrows():
     if st.button(f"📩 {row['bus_id']} - Mesaj Gönder"):
         result = send_sms(row['bus_id'])
         st.success(f"Mesaj gönderildi: {result}")
+
+st.subheader("🗺️ Bakım Gereken Otobüslerin Konumları")
+
+# Harita oluştur
+m = folium.Map(location=[41.015137, 28.979530], zoom_start=11)  # İstanbul ortalama koordinat
+
+# Sadece bakım gereken otobüslerin konumları
+for _, row in sorted_df.iterrows():
+    fault_row = faults_df[faults_df["SKAPINUMARA"] == row["bus_id"]]
+    if not fault_row.empty:
+        lat = fault_row.iloc[0]["NENLEM"]
+        lon = fault_row.iloc[0]["NBOYLAM"]
+        folium.Marker(
+            location=[lat, lon],
+            popup=f"{row['bus_id']} - {row['hat_kodu']}",
+            icon=folium.Icon(color='red', icon='wrench', prefix='fa')
+        ).add_to(m)
+
+# Haritayı Streamlit'e göm
+st_folium(m, width=700)
